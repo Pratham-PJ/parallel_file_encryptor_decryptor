@@ -10,6 +10,7 @@
 #include <semaphore.h>
 
 ProcessManagement::ProcessManagement() {
+<<<<<<< HEAD
     // Clean up any existing semaphores
     sem_unlink("/items_semaphore");
     sem_unlink("/empty_slots_semaphore");
@@ -39,12 +40,20 @@ ProcessManagement::ProcessManagement() {
         exit(1);
     }
     
+=======
+    sem_t* itemsSemaphore = sem_open("/items_semaphore", O_CREAT, 0666, 0);
+    sem_t* emptySlotsSemaphore = sem_open("/empty_slots_semaphore", O_CREAT, 0666, 1000);
+    shmFd = shm_open(SHM_NAME, O_CREAT | O_RDWR, 0666);
+    ftruncate(shmFd, sizeof(SharedMemory));
+    sharedMem = static_cast<SharedMemory *>(mmap(nullptr, sizeof(SharedMemory), PROT_READ | PROT_WRITE, MAP_SHARED, shmFd, 0));
+>>>>>>> 463f0fb66506374217f8c0edd6b3825fe311733f
     sharedMem->front = 0;
     sharedMem->rear = 0;
     sharedMem->size.store(0);
 }
 
 ProcessManagement::~ProcessManagement() {
+<<<<<<< HEAD
     if (sharedMem != MAP_FAILED) {
         munmap(sharedMem, sizeof(SharedMemory));
     }
@@ -61,6 +70,10 @@ ProcessManagement::~ProcessManagement() {
     }
     sem_unlink("/items_semaphore");
     sem_unlink("/empty_slots_semaphore");
+=======
+    munmap(sharedMem, sizeof(SharedMemory));
+    shm_unlink(SHM_NAME);
+>>>>>>> 463f0fb66506374217f8c0edd6b3825fe311733f
 }
 
 bool ProcessManagement::submitToQueue(std::unique_ptr<Task> task) {
@@ -68,6 +81,7 @@ bool ProcessManagement::submitToQueue(std::unique_ptr<Task> task) {
     std::unique_lock<std::mutex> lock(queueLock);
 
     if (sharedMem->size.load() >= 1000) {
+<<<<<<< HEAD
         sem_post(emptySlotsSemaphore);
         return false;
     }
@@ -79,6 +93,11 @@ bool ProcessManagement::submitToQueue(std::unique_ptr<Task> task) {
     }
     
     strcpy(sharedMem->tasks[sharedMem->rear], taskStr.c_str());
+=======
+        return false;
+    }
+    strcpy(sharedMem->tasks[sharedMem->rear], task->toString().c_str());
+>>>>>>> 463f0fb66506374217f8c0edd6b3825fe311733f
     sharedMem->rear = (sharedMem->rear + 1) % 1000;
     sharedMem->size.fetch_add(1);
     lock.unlock();
