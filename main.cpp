@@ -2,6 +2,9 @@
 #include <filesystem>
 #include "./src/app/processes/ProcessManagement.hpp"
 #include "./src/app/processes/Task.hpp"
+#include <ctime>
+#include <iomanip>
+#include <sys/wait.h>
 
 namespace fs = std::filesystem;
 
@@ -18,6 +21,7 @@ int main(int argc, char* argv[]) {
     try {
         if (fs::exists(directory) && fs::is_directory(directory)) {
             ProcessManagement processManagement;
+            int taskCount = 0;
 
             for (const auto& entry : fs::recursive_directory_iterator(directory)) {
                 if (entry.is_regular_file()) {
@@ -28,19 +32,36 @@ int main(int argc, char* argv[]) {
                     if (f_stream.is_open()) {
                         Action taskAction = (action == "encrypt") ? Action::ENCRYPT : Action::DECRYPT;
                         auto task = std::make_unique<Task>(std::move(f_stream), taskAction, filePath);
-                        processManagement.submitToQueue(std::move(task));
+                        
+                        std::time_t t = std::time(nullptr);
+                        std::tm* now = std::localtime(&t);
+                        std::cout << "Starting the encryption/decryption at: " << std::put_time(now, "%Y-%m-%d %H:%M:%S") << std::endl;
+                        
+                        if (processManagement.submitToQueue(std::move(task))) {
+                            taskCount++;
+                        } else {
+                            std::cout << "Failed to submit task for file: " << filePath << std::endl;
+                        }
                     } else {
                         std::cout << "Unable to open file: " << filePath << std::endl;
                     }
                 }
             }
-
-            processManagement.executeTasks();
+            
+            // Wait for all child processes to complete
+            for (int i = 0; i < taskCount; i++) {
+                wait(nullptr);
+            }
+            
+            std::cout << "All tasks completed." << std::endl;
+            
         } else {
             std::cout << "Invalid directory path!" << std::endl;
         }
     } catch (const fs::filesystem_error& ex) {
         std::cout << "Filesystem error: " << ex.what() << std::endl;
+    } catch (const std::exception& ex) {
+        std::cout << "Error: " << ex.what() << std::endl;
     }
 
     return 0;
