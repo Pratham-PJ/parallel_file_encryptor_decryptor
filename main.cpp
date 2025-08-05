@@ -33,7 +33,6 @@ int main(int argc, char* argv[]) {
                         Action taskAction = (action == "encrypt") ? Action::ENCRYPT : Action::DECRYPT;
                         auto task = std::make_unique<Task>(std::move(f_stream), taskAction, filePath);
                         
-<<<<<<< HEAD
                         std::time_t t = std::time(nullptr);
                         std::tm* now = std::localtime(&t);
                         std::cout << "Starting the encryption/decryption at: " << std::put_time(now, "%Y-%m-%d %H:%M:%S") << std::endl;
@@ -43,19 +42,11 @@ int main(int argc, char* argv[]) {
                         } else {
                             std::cout << "Failed to submit task for file: " << filePath << std::endl;
                         }
-=======
-                            std::time_t t = std::time(nullptr);
-                            std::tm* now = std::localtime(&t);
-                            std::cout << "Starting the encryption/decryption at: " << std::put_time(now, "%Y-%m-%d %H:%M:%S") << std::endl;
-                            processManagement.submitToQueue(std::move(task));
-
->>>>>>> 463f0fb66506374217f8c0edd6b3825fe311733f
                     } else {
                         std::cout << "Unable to open file: " << filePath << std::endl;
                     }
                 }
             }
-<<<<<<< HEAD
             
             // Wait for all child processes to complete
             for (int i = 0; i < taskCount; i++) {
@@ -64,8 +55,6 @@ int main(int argc, char* argv[]) {
             
             std::cout << "All tasks completed." << std::endl;
             
-=======
->>>>>>> 463f0fb66506374217f8c0edd6b3825fe311733f
         } else {
             std::cout << "Invalid directory path!" << std::endl;
         }
