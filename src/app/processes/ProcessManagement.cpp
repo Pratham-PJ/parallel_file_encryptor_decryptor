@@ -10,7 +10,6 @@
 #include <semaphore.h>
 
 ProcessManagement::ProcessManagement() {
-<<<<<<< HEAD
     // Clean up any existing semaphores
     sem_unlink("/items_semaphore");
     sem_unlink("/empty_slots_semaphore");
@@ -40,13 +39,6 @@ ProcessManagement::ProcessManagement() {
         exit(1);
     }
     
-=======
-    sem_t* itemsSemaphore = sem_open("/items_semaphore", O_CREAT, 0666, 0);
-    sem_t* emptySlotsSemaphore = sem_open("/empty_slots_semaphore", O_CREAT, 0666, 1000);
-    shmFd = shm_open(SHM_NAME, O_CREAT | O_RDWR, 0666);
-    ftruncate(shmFd, sizeof(SharedMemory));
-    sharedMem = static_cast<SharedMemory *>(mmap(nullptr, sizeof(SharedMemory), PROT_READ | PROT_WRITE, MAP_SHARED, shmFd, 0));
->>>>>>> 463f0fb66506374217f8c0edd6b3825fe311733f
     sharedMem->front = 0;
     sharedMem->rear = 0;
     sharedMem->size.store(0);

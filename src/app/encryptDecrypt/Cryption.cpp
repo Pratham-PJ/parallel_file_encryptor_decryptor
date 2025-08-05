@@ -5,7 +5,6 @@
 #include <iomanip>
 
 int executeCryption(const std::string& taskData) {
-<<<<<<< HEAD
     try {
         Task task = Task::fromString(taskData);
         ReadEnv env;
@@ -55,26 +54,6 @@ int executeCryption(const std::string& taskData) {
             task.f_stream.seekp(0, std::ios::beg);
             task.f_stream << content;
             task.f_stream.flush();
-=======
-    Task task = Task::fromString(taskData);
-    ReadEnv env;
-    std::string envKey = env.getenv();
-    int key = std::stoi(envKey);
-    if (task.action == Action::ENCRYPT) {
-        char ch;
-        while (task.f_stream.get(ch)) {
-            ch = (ch + key) % 256;
-            task.f_stream.seekp(-1, std::ios::cur);
-            task.f_stream.put(ch);
-        }
-        task.f_stream.close();
-    } else {
-        char ch;
-        while (task.f_stream.get(ch)) {
-            ch = (ch - key + 256) % 256;
-            task.f_stream.seekp(-1, std::ios::cur);
-            task.f_stream.put(ch);
->>>>>>> 463f0fb66506374217f8c0edd6b3825fe311733f
         }
         
         task.f_stream.close();
